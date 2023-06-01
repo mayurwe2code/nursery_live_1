@@ -21,7 +21,7 @@ import passport from 'passport'
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
 const MongoStore = connectMongo(session);
-import { ensureAuth, ensureGuest } from '../nursery_live/middleware/auth.js'
+import { ensureAuth, ensureGuest } from './middleware/auth.js'
 
 const app = express();
 connection;
