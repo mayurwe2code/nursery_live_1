@@ -459,6 +459,32 @@ export function admin_change_vendor_status(req, res) {
     }
     );
 }
+export function order_verify_by_vendor(req, res) {
+    let { order_verify, order_id } = req.body
+    console.log("check order_verify_by_admin" + req.vendor_id)
+    connection.query("UPDATE `order` SET `verify_by_vendor` = '" + order_verify + "' WHERE `order_id` = '" + order_id + "' AND `vendor_id` = '" + req.vendor_id + "'", (err, rows, fields) => {
+        if (err) {
+            console.log(err)
+            res.status(200).send({ "status": false, "response": "find some error" })
+        } else {
+            if (rows.affectedRows >= 1) { res.status(200).send({ "status": true, "response": "order " + order_verify + " successfull" }) } else { res.status(200).send({ "status": false, "response": "find some error" }) }
+        }
+    })
+}
+
+
+export function vendor_orders_status(req, res) {
+    console.log("SELECT count(DISTINCT(order_id)) AS total_orders_from_order_table,(SELECT COUNT(DISTINCT(order_id)) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'accepted') AS accepted_order,(SELECT COUNT(DISTINCT(order_id)) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'rejected') AS rejected_order,(SELECT COUNT(DISTINCT(order_id)) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'pending') AS pending_order,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "') AS total_orders_from_order_delivery_table ,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'ready_to_pickup' ) AS ready_to_pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Pickup' ) AS pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Delivered' ) AS delivered_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Rejected_by_customer' ) AS rejected_by_customer_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Failed_Delivery_Attempts' ) AS failed_Delivery_Attempts_orders FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "'")
+    connection.query("SELECT count(DISTINCT(order_id)) AS total_orders_from_order_table,(SELECT COUNT(DISTINCT(order_id)) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'accepted') AS accepted_order,(SELECT COUNT(DISTINCT(order_id)) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'rejected') AS rejected_order,(SELECT COUNT(DISTINCT(order_id)) FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "' AND `verify_by_vendor` = 'pending') AS pending_order,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "') AS total_orders_from_order_delivery_table ,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'ready_to_pickup' ) AS ready_to_pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Pickup' ) AS pickup_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Delivered' ) AS delivered_orders,( SELECT COUNT(*) FROM `order_delivery_details`, `order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Rejected_by_customer' ) AS rejected_by_customer_orders,( SELECT COUNT(*) FROM `order_delivery_details` ,`order` WHERE `order_delivery_details`.`order_id` = `order`.`order_id` AND `vendor_id` = '" + req.vendor_id + "' AND `order_status` = 'Failed_Delivery_Attempts' ) AS failed_Delivery_Attempts_orders FROM `order` WHERE `vendor_id` ='" + req.vendor_id + "'", (err, rows, fields) => {
+        if (err) {
+            console.log(err)
+            res.status(200).send({ "status": false, "response": "find some error" })
+        } else {
+            res.status(200).send({ "status": true, "response": rows })
+        }
+    })
+}
+
 
 // var notification = {
 //     "title": "tttt",

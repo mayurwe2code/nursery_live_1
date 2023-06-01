@@ -8,23 +8,22 @@ export async function add_order(req, res) {
   let order_no_obj = {};
   let product_array = req.body;
   var fcm_tokens = [];
-  console.log("----------add_order-check-13-------" + req.user_id)
-  console.log(req.user_id);
+  console.log("---add_order-check-13-------" + req.user_id)
   console.log(product_array);
   connection.query("SELECT * FROM user WHERE id='" + req.user_id + "'",
     (err, result) => {
       if (err) {
         console.log(err)
       } else {
-        var { first_name, last_name, email, phone_no, pincode, city, address, alternate_address, user_log, user_lat, image } = result[0]
-        if (first_name != '' && last_name != '' && email != '' && phone_no != '' && pincode != '' && city != '' && address != '' && alternate_address != '' && user_log != '' && user_lat != '') {
+        var { id, first_name, last_name, email, phone_no, pincode, city, address, alternate_address, user_log, user_lat, image } = result[0]
+        console.log({ first_name, last_name, email, phone_no, pincode, city, address, alternate_address, user_log, user_lat, image })
+        if (first_name && last_name && email && phone_no && pincode && city && address && alternate_address && user_log && user_lat) {
           console.log("===============user_detaile_check========21=====" + JSON.stringify(result))
           if (result[0].token_for_notification != "" && result[0].token_for_notification != undefined && result[0].token_for_notification != null) { fcm_tokens.push(result[0].token_for_notification) }
 
           product_array.forEach((item, index) => {
 
             console.log("------product_array--------26---index_no--" + index)
-            console.log("---------------------------27---order_no_obj--" + order_no_obj + "---------vendore_id_array----" + vendore_id_array)
             console.log("-------------item----------28-----" + JSON.stringify(item))
 
             if (vendore_id_array.includes(item["vendor_id"])) {
@@ -35,8 +34,6 @@ export async function add_order(req, res) {
               if (verify_code.length > 7) {
                 verify_code = verify_code.substring(0, verify_code.length - 1)
               }
-
-              console.log("++++++++++++++++++++++++++line---39___" + item["product_id"])
               connection.query("SELECT product_stock_quantity FROM product WHERE id='" + item["product_id"] + "'",
                 (err, result) => {
                   if (err) {
@@ -45,8 +42,11 @@ export async function add_order(req, res) {
                   } else {
                     if (result != "") {
                       console.log("---------product_stock_quantity--result-of--" + item["product_id"] + "-line_48__" + JSON.stringify(result))
+
                       console.log(parseInt(result[0]["product_stock_quantity"]) + "-" + parseInt(item["total_order_product_quantity"]))
+
                       var update_stock_qty = parseInt(result[0]["product_stock_quantity"]) - parseInt(item["total_order_product_quantity"])
+
                       console.log("-----update_stock_qty---------50------" + update_stock_qty)
                       if (update_stock_qty >= 0 && item["total_order_product_quantity"] > 0) {
                         console.log("___pass__" + update_stock_qty + ">=" + 0 + "&&" + item["total_order_product_quantity"] + ">" + 0 + "___")
@@ -74,7 +74,7 @@ export async function add_order(req, res) {
                           item["discount_coupon"] +
                           "','" +
                           item["discount_coupon_value"] +
-                          "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + address + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "','" + verify_code + "')",
+                          "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + item["current_address"] + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "','" + verify_code + "')",
                           (err, rows) => {
                             if (err) {
                               console.log(err)
@@ -95,24 +95,19 @@ export async function add_order(req, res) {
                                   }
                                 }
                               );
-
+                              console.log("delete-cart_query----------------------delete from cart where product_id ='" + item["product_id"] + "' AND user_id='" + req.user_id + "'")
                               connection.query("delete from cart where product_id ='" + item["product_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                                 if (err) {
                                   console.log("-----err-------delete--101-")
                                   console.log(err)
                                   console.log({ "response": "delete opration failed", "success": false });
                                 } else {
-                                  // console.log("rows-----------------------delete---row")
-                                  // console.log(rows)
-                                  // rows.affectedRows == "1" ? console.log({ "response": "delete successfull", "success": true }) : res.console.log({ "response": "delete opration failed", "success": false })
+                                  console.log("rows-----------------------delete---row")
+                                  console.log(rows)
+
                                 }
                               });
 
-
-                              // send_emal-----------------etc.
-                              //resend--------------------
-
-                              // res.send("okay")
                               console.log('INSERT INTO order_detaile (`product_id`,`order_id`,`vendor_id`, `name`, `seo_tag`, `brand`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `category`, `is_deleted`, `status`, `review`, `discount`, `rating`, `description`, `is_active`, `created_on`, `updated_on`) SELECT "' + item["product_id"] + '","' + order_no_old + '",`vendor_id`, `name`, `seo_tag`, `brand`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `category`, `is_deleted`, `status`, `review`, `discount`, `rating`, `description`, `is_active`, `created_on`, `updated_on` FROM product WHERE id = ' + item["product_id"] + '')
 
                               connection.query('INSERT INTO order_detaile (`product_id`,`order_id`,`vendor_id`, `name`, `seo_tag`, `brand`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `category`, `is_deleted`, `status`, `review`, `discount`, `rating`, `description`, `is_active`) SELECT "' + item["product_id"] + '","' + order_no_old + '",`vendor_id`, `name`, `seo_tag`, `brand`, `quantity`, `unit`, `product_stock_quantity`, `price`, `mrp`, `gst`, `sgst`, `cgst`, `category`, `is_deleted`, `status`, `review`, `discount`, `rating`, `description`, `is_active` FROM product WHERE id = ' + item["product_id"] + '', (err, result) => {
@@ -190,7 +185,7 @@ export async function add_order(req, res) {
                           item["discount_coupon"] +
                           "','" +
                           item["discount_coupon_value"] +
-                          "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + address + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "' ,'" + verify_code + "')",
+                          "'," + user_lat + "," + user_log + ", '" + first_name + "', '" + item["current_address"] + "', '" + email + "', " + pincode + ", '" + city + "', '" + image + "','" + phone_no + "' ,'" + verify_code + "')",
                           (err, rows) => {
                             if (err) {
                               console.log(err)
@@ -211,15 +206,15 @@ export async function add_order(req, res) {
                                   }
                                 }
                               );
-
+                              console.log("delete___qyery____delete from cart where product_id ='" + item["product_id"] + "' AND user_id='" + req.user_id + "'")
                               connection.query("delete from cart where product_id ='" + item["product_id"] + "' AND user_id='" + req.user_id + "'", (err, rows) => {
                                 if (err) {
                                   console.log("rows------201----------err-------delete---")
                                   console.log(err)
                                   console.log({ "response": "delete opration failed", "success": false });
                                 } else {
-                                  // console.log("rows---------205--------------delete---row")
-                                  // console.log(rows)
+                                  console.log("rows---------205--------------delete---row")
+                                  console.log(rows)
                                   // rows.affectedRows == "1" ? console.log({ "response": "delete successfull", "success": true }) : res.console.log({ "response": "delete opration failed", "success": false })
                                 }
                               });
@@ -309,7 +304,7 @@ export async function add_order(req, res) {
                 }).catch((err) => { console.log(err) })
               }
 
-              res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "success": true });
+              res.status(StatusCodes.OK).json({ "status": "ok", "response": "order successfully added", "order_id": order_ar, "success": true, "user_id": id });
 
             }
           })

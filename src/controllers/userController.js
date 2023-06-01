@@ -227,7 +227,7 @@ export function user_signup(req, res) {
                       to: u_email,
                       subject: 'Nursery_live one time password',
                       text: "use otp within 60 sec.",
-                      html: "<h1>your one time password " + OTP + " <h1/><a href='https://script.google.com/macros/s/AKfycbzs_E_qqicp6FQLUoy-5T7eaSv7VTK01IW8t-GDaeM/dev' target='_blank'>https://script.google.com/macros/s/AKfycbzs_E_qqicp6FQLUoy-5T7eaSv7VTK01IW8t-GDaeM/dev</a>"
+                      html: "<h1>your one time password " + OTP + " <h1/>"
                     }
                     nodemailer.createTransport({
                       service: 'gmail',
@@ -584,3 +584,21 @@ export function set_notification_token(req, res) {
   );
 }
 
+export async function update_user_address(req, res) {
+  let { alternate_address } = req.body
+  if (alternate_address) {
+    let srt_user = "update user  set  `alternate_address`='" + alternate_address + "' WHERE user_id = '" + req.user_id + "'"
+    connection.query(srt_user, (err, rows) => {
+      if (err) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "something went wrong", "status": false });
+      } else {
+        res.status(StatusCodes.OK).json({ message: "updated user successfully", "status": true });
+      }
+    }
+    );
+  } else {
+    res.status(StatusCodes.OK).json({ message: "please feel input", "status": false });
+  }
+
+
+}

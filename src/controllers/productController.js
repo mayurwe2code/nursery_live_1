@@ -38,6 +38,7 @@ export async function addproduct(req, res) {
         '","' + req.created_by + '","' + req.created_by_id + '") ',
         (err, result) => {
           if (err) {
+            console.log(err)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ "response": "find error", "status": false });
           } else {
             console.log("chk------------------70")

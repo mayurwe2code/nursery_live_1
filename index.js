@@ -21,7 +21,7 @@ import passport from 'passport'
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
 const MongoStore = connectMongo(session);
-import { ensureAuth, ensureGuest } from './middleware/auth.js'
+import { ensureAuth, ensureGuest } from '../nursery_live/middleware/auth.js'
 
 const app = express();
 connection;
@@ -63,7 +63,8 @@ app.use(productRouter, cartRouter, userRouter, orderRouter, notificationRouter, 
 
 mongoose.connect("mongodb+srv://Raahul_verma:vw48MlF9mMcMJL7y@cluster0.hxtq31y.mongodb.net/CrudNew?retryWrites=true&w=majority", {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  connectTimeoutMS: 600000,
 })
 
 

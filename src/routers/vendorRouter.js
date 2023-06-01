@@ -14,7 +14,9 @@ import {
     update_vendor_profile,
     admin_add_vendor,
     vendor_list,
-    admin_change_vendor_status
+    admin_change_vendor_status,
+    order_verify_by_vendor,
+    vendor_orders_status
     // user_details,
     // change_user_password,
     // user_forgate_password,
@@ -69,6 +71,9 @@ vendor_router.post("/update_vendor_profile", admin_auth, upload.single("image"),
 vendor_router.post("/admin_add_vendor", admin_auth, upload.single("image"), admin_add_vendor);
 vendor_router.post("/vendor_list", vendor_list);
 vendor_router.post("/admin_change_vendor_status", admin_change_vendor_status);
+vendor_router.put("/order_verify_by_vendor", admin_auth, order_verify_by_vendor);
+vendor_router.get("/vendor_orders_status", admin_auth, vendor_orders_status);
+
 // vendor_router.post("/change_user_password", change_user_password);
 // vendor_router.post("/user_forgate_password", user_forgate_password);
 // vendor_router.post("/user_forgate_password_update", auth_user, user_forgate_password_update);

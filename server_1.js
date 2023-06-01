@@ -4,7 +4,7 @@
 // const TO_NUMBER = "9827803080"
 // const VONAGE_BRAND_NAME = "grifskirt"
 
-const { MOVED_PERMANENTLY } = require('http-status-codes');
+// const { MOVED_PERMANENTLY } = require('http-status-codes');
 
 // import { Vonage } from '@vonage/server-sdk'
 
@@ -96,9 +96,9 @@ const { MOVED_PERMANENTLY } = require('http-status-codes');
 // var sid = "AC5816f8522da4a7a572809fc11dcd4fec";
 // var auth_token = "5f62454f377a7adb3ae891ba0107812a";
 
-//-----------auth-2--------------------------------
-var sid = "ACe194c0f944b727b231633a2e7aa48c50";
-var auth_token = "a56280988ddf4fa052aab0e46841359a";
+// //-----------auth-2--------------------------------
+// var sid = "ACe194c0f944b727b231633a2e7aa48c50";
+// var auth_token = "a56280988ddf4fa052aab0e46841359a";
 
 // var twilio = require("twilio")(sid, auth_token);
 
